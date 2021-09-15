@@ -1,0 +1,184 @@
+{
+	"info": {
+		"_postman_id": "53a91b01-70b1-4257-9eb5-d7c5eaaa5583",
+		"name": "Deck of Cards API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Shuffle cards",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"New deck created: status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    const response = pm.response.json()\r",
+							"    pm.environment.set(\"deck_id\", response.deck_id)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6",
+					"protocol": "https",
+					"host": [
+						"deckofcardsapi",
+						"com"
+					],
+					"path": [
+						"api",
+						"deck",
+						"new",
+						"shuffle",
+						""
+					],
+					"query": [
+						{
+							"key": "deck_count",
+							"value": "6"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Draw 4 cards",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"\r",
+							"pm.test(\"New deck created: status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);    \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Draw 4 cards successful\", function () {\r",
+							"    pm.expect(response.success).to.eql(true);\r",
+							"    pm.expect(response.cards.length).to.eql(4);\r",
+							"    pm.environment.set(\"dealerCard1\", response.cards[0].value)\r",
+							"    pm.environment.set(\"dealerCard2\", response.cards[1].value)\r",
+							"    pm.environment.set(\"playerCard1\", response.cards[2].value)\r",
+							"    pm.environment.set(\"playerCard2\", response.cards[3].value)\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Make Dealers cards integers\", function(){\r",
+							"    if (isNaN(pm.environment.get(\"dealerCard1\")) && pm.environment.get(\"dealerCard1\") != \"ACE\") {\r",
+							"        pm.environment.set(\"dealerCard1\", 10)\r",
+							"    }\r",
+							"    if (isNaN(pm.environment.get(\"dealerCard2\")) && pm.environment.get(\"dealerCard2\") != \"ACE\"){\r",
+							"        pm.environment.set(\"dealerCard2\", 10)\r",
+							"    }\r",
+							"    if (pm.environment.get(\"dealerCard1\") === \"ACE\" && pm.environment.get(\"dealerCard2\") > 10){\r",
+							"        pm.environment.set(\"dealerCard1\", 1)\r",
+							"    } else if (pm.environment.get(\"dealerCard1\") === \"ACE\" && pm.environment.get(\"dealerCard2\") <= 10){\r",
+							"        pm.environment.set(\"dealerCard1\", 11)\r",
+							"    }\r",
+							"    if (pm.environment.get(\"dealerCard2\") === \"ACE\" && pm.environment.get(\"dealerCard1\") > 10){\r",
+							"        pm.environment.set(\"dealerCard2\", 1)\r",
+							"    } else if (pm.environment.get(\"dealerCard2\") === \"ACE\" && pm.environment.get(\"dealerCard1\") <= 10){\r",
+							"        pm.environment.set(\"dealerCard2\", 11)\r",
+							"    } else if (pm.environment.get(\"dealerCard1\") && pm.environment.get(\"dealerCard2\") === \"ACE\"){\r",
+							"        pm.environment.set(\"dealerCard1\", 1)\r",
+							"        pm.environment.set(\"dealerCard2\", 11)\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Make Players cards integers\", function(){\r",
+							"    if (isNaN(pm.environment.get(\"playerCard1\")) && pm.environment.get(\"playerCard1\") != \"ACE\") {\r",
+							"        pm.environment.set(\"playerCard1\", 10)\r",
+							"    }\r",
+							"    if (isNaN(pm.environment.get(\"playerCard2\")) && pm.environment.get(\"playerCard2\") != \"ACE\"){\r",
+							"        pm.environment.set(\"playerCard2\", 10)\r",
+							"    }\r",
+							"    if (pm.environment.get(\"playerCard1\") === \"ACE\" && pm.environment.get(\"playerCard2\") > 10){\r",
+							"        pm.environment.set(\"playerCard1\", 1)\r",
+							"    } else if (pm.environment.get(\"playerCard1\") === \"ACE\" && pm.environment.get(\"playerCard2\") <= 10){\r",
+							"        pm.environment.set(\"playerCard1\", 11)\r",
+							"    }\r",
+							"    if (pm.environment.get(\"playerCard2\") === \"ACE\" && pm.environment.get(\"playerCard1\") > 10){\r",
+							"        pm.environment.set(\"playerCard2\", 1)\r",
+							"    } else if (pm.environment.get(\"playerCard2\") === \"ACE\" && pm.environment.get(\"playerCard1\") <= 10){\r",
+							"        pm.environment.set(\"playerCard2\", 11)\r",
+							"    } else if (pm.environment.get(\"playerCard1\") && pm.environment.get(\"playerCard2\") === \"ACE\"){\r",
+							"        pm.environment.set(\"playerCard1\", 1)\r",
+							"        pm.environment.set(\"playerCard2\", 11)\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"If we have a winner\", function () {\r",
+							"    let winner;\r",
+							"    let dealerCardsSum = parseInt(pm.environment.get(\"dealerCard1\")) + parseInt(pm.environment.get(\"dealerCard2\"));\r",
+							"    let playerCardsSum = parseInt(pm.environment.get(\"playerCard1\")) + parseInt(pm.environment.get(\"playerCard2\"));\r",
+							"    if (dealerCardsSum > playerCardsSum && dealerCardsSum <= 21) {\r",
+							"        winner = \"Dealer wins\" \r",
+							"    } else if (dealerCardsSum < playerCardsSum && playerCardsSum > 21) {\r",
+							"        winner = \"Dealer wins\" \r",
+							"    } else if (dealerCardsSum < playerCardsSum && playerCardsSum <= 21) {\r",
+							"        winner = \"Player wins\"\r",
+							"    } else if (dealerCardsSum > playerCardsSum && dealerCardsSum > 21) {\r",
+							"        winner = \"Player wins\"\r",
+							"    } else if (dealerCardsSum == playerCardsSum) {\r",
+							"        winner = \"Draw\"\r",
+							"    }\r",
+							"    console.log(winner);\r",
+							"    pm.environment.set(\"winner\", winner)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://deckofcardsapi.com/api/deck/:deck_id/draw/?count=4",
+					"protocol": "https",
+					"host": [
+						"deckofcardsapi",
+						"com"
+					],
+					"path": [
+						"api",
+						"deck",
+						":deck_id",
+						"draw",
+						""
+					],
+					"query": [
+						{
+							"key": "count",
+							"value": "4"
+						}
+					],
+					"variable": [
+						{
+							"key": "deck_id",
+							"value": "{{deck_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
