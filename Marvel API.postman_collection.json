@@ -1,0 +1,550 @@
+{
+	"info": {
+		"_postman_id": "f2f34277-219f-4f31-9615-14e42a1a339e",
+		"name": "Marvel API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get X-men series ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let ts = new Date().getTime();\r",
+							"pm.environment.set(\"ts\", ts);\r",
+							"let privateKey = pm.environment.get(\"privateKey\");\r",
+							"let publicKey = pm.environment.get(\"apiKey\");\r",
+							"let hash = CryptoJS.MD5(ts + privateKey + publicKey).toString();\r",
+							"pm.environment.set(\"hash\", hash);\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let response = pm.response.json();\r",
+							"let idXmen = [response.data.results[1].id]\r",
+							"//for (let i=0; i < response.data.results.length; i++) {\r",
+							"//    idXmen.push(response.data.results[i].id)\r",
+							"//};\r",
+							"pm.environment.set(\"XmenID\", idXmen);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://gateway.marvel.com:443/v1/public/series?title=X-men&apikey={{apiKey}}&ts={{ts}}&hash={{hash}}",
+					"protocol": "https",
+					"host": [
+						"gateway",
+						"marvel",
+						"com"
+					],
+					"port": "443",
+					"path": [
+						"v1",
+						"public",
+						"series"
+					],
+					"query": [
+						{
+							"key": "title",
+							"value": "X-men"
+						},
+						{
+							"key": "apikey",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "ts",
+							"value": "{{ts}}"
+						},
+						{
+							"key": "hash",
+							"value": "{{hash}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Testing fetching data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Getting 0 data\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.data.total).to.eql(0);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://gateway.marvel.com:443/v1/public/characters?limit=100&ts={{ts}}&apikey={{apiKey}}&hash={{hash}}&name=abcd",
+					"protocol": "https",
+					"host": [
+						"gateway",
+						"marvel",
+						"com"
+					],
+					"port": "443",
+					"path": [
+						"v1",
+						"public",
+						"characters"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "100"
+						},
+						{
+							"key": "ts",
+							"value": "{{ts}}"
+						},
+						{
+							"key": "apikey",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "hash",
+							"value": "{{hash}}"
+						},
+						{
+							"key": "name",
+							"value": "abcd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all characters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let response = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test if fetching data\", function () {\r",
+							"    pm.expect(response.data.total).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"let characters = []\r",
+							"for (let i=0; i < 100; i++) {\r",
+							"    characters.push(response.data.results[i].name)\r",
+							"};\r",
+							"\r",
+							"pm.test(\"Test if getting 100 characters\", function () {\r",
+							"    pm.expect(characters.length).to.eql(100);\r",
+							"});\r",
+							"\r",
+							"pm.globals.set(\"characters\", characters);\r",
+							"pm.globals.set(\"count\", 1);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://gateway.marvel.com:443/v1/public/characters?limit=100&ts={{ts}}&apikey={{apiKey}}&hash={{hash}}&series={{XmenID}}",
+					"protocol": "https",
+					"host": [
+						"gateway",
+						"marvel",
+						"com"
+					],
+					"port": "443",
+					"path": [
+						"v1",
+						"public",
+						"characters"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "100"
+						},
+						{
+							"key": "ts",
+							"value": "{{ts}}"
+						},
+						{
+							"key": "apikey",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "hash",
+							"value": "{{hash}}"
+						},
+						{
+							"key": "series",
+							"value": "{{XmenID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Character",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"let characters = pm.globals.get(\"characters\")\r",
+							"let randomIndex = Math.floor(Math.random()*characters.length)\r",
+							"let randomCharacter = characters[randomIndex]\r",
+							"\r",
+							"pm.globals.set(\"character\", randomCharacter)\r",
+							"\r",
+							"let response = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test if fetching data\", function () {\r",
+							"    pm.expect(response.data.total).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"let totalSeries = response.data.results[0].series.available;\r",
+							"let fighter = {};\r",
+							"fighter[\"character\"] = randomCharacter;\r",
+							"fighter[\"Number of series\"] = totalSeries;\r",
+							"\r",
+							"console.log(fighter)\r",
+							"\r",
+							"let count = pm.globals.get(\"count\")\r",
+							"if (count === 1){\r",
+							"    count = count - 1\r",
+							"    pm.globals.set(\"count\", count)\r",
+							"    postman.setNextRequest(\"Get Character\");\r",
+							"} else if (count === 0) {\r",
+							"    postman.setNextRequest(null);\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://gateway.marvel.com:443/v1/public/characters?limit=100&ts={{ts}}&apikey={{apiKey}}&hash={{hash}}&name={{character}}",
+					"protocol": "https",
+					"host": [
+						"gateway",
+						"marvel",
+						"com"
+					],
+					"port": "443",
+					"path": [
+						"v1",
+						"public",
+						"characters"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "100"
+						},
+						{
+							"key": "ts",
+							"value": "{{ts}}"
+						},
+						{
+							"key": "apikey",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "hash",
+							"value": "{{hash}}"
+						},
+						{
+							"key": "name",
+							"value": "{{character}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Character1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let characters = pm.globals.get(\"characters\")\r",
+							"let randomIndex = Math.floor(Math.random()*characters.length)\r",
+							"let randomCharacter = characters[randomIndex]\r",
+							"\r",
+							"pm.globals.set(\"character\", randomCharacter)\r",
+							"\r",
+							"let response = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test if fetching data\", function () {\r",
+							"    pm.expect(response.data.total).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"let totalSeries = response.data.results[0].series.available;\r",
+							"let fighter1 = {};\r",
+							"fighter1[\"character\"] = randomCharacter;\r",
+							"fighter1[\"Number of series\"] = totalSeries;\r",
+							"pm.globals.set(\"Fighter1\", fighter1)\r",
+							"console.log(fighter1)\r",
+							"\r",
+							"pm.test(\"Fighter 1 is \" + fighter1[\"character\"], function () {\r",
+							"    pm.expect(fighter1[\"character\"].length).to.be.above(0);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://gateway.marvel.com:443/v1/public/characters?limit=100&ts={{ts}}&apikey={{apiKey}}&hash={{hash}}&name={{character}}",
+					"protocol": "https",
+					"host": [
+						"gateway",
+						"marvel",
+						"com"
+					],
+					"port": "443",
+					"path": [
+						"v1",
+						"public",
+						"characters"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "100"
+						},
+						{
+							"key": "ts",
+							"value": "{{ts}}"
+						},
+						{
+							"key": "apikey",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "hash",
+							"value": "{{hash}}"
+						},
+						{
+							"key": "name",
+							"value": "{{character}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Character2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let characters = pm.globals.get(\"characters\")\r",
+							"let randomIndex = Math.floor(Math.random()*characters.length)\r",
+							"let randomCharacter = characters[randomIndex]\r",
+							"\r",
+							"pm.globals.set(\"character\", randomCharacter)\r",
+							"\r",
+							"let response = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test if fetching data\", function () {\r",
+							"    pm.expect(response.data.total).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"let totalSeries = response.data.results[0].series.available;\r",
+							"let fighter2 = {};\r",
+							"fighter2[\"character\"] = randomCharacter;\r",
+							"fighter2[\"Number of series\"] = totalSeries;\r",
+							"pm.globals.set(\"Fighter2\", fighter2)\r",
+							"let fighter1 = pm.globals.get(\"Fighter1\")\r",
+							"console.log(fighter2)\r",
+							"console.log(fighter1)\r",
+							"\r",
+							"let winner\r",
+							"if (fighter1[\"Number of series\"] > fighter2[\"Number of series\"]) {\r",
+							"    winner = fighter1[\"character\"]\r",
+							"} else if (fighter1[\"Number of series\"] < fighter2[\"Number of series\"]) {\r",
+							"    winner = fighter2[\"character\"]\r",
+							"} else {\r",
+							"    winner = \"Draw\"\r",
+							"}\r",
+							"pm.globals.set(\"Winner\", winner);\r",
+							"console.log(winner);\r",
+							"\r",
+							"pm.test(\"Not the same fighters\", function () {\r",
+							"    pm.expect(fighter1[\"character\"]).not.equal(fighter2[\"character\"]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Fighter 2 is \" + fighter2[\"character\"], function () {\r",
+							"    pm.expect(fighter1[\"character\"].length).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"The winner is \" + pm.globals.get(\"Winner\"), function () {\r",
+							"    pm.expect(winner).to.be.oneOf([fighter1[\"character\"], fighter2[\"character\"], \"Draw\"]);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://gateway.marvel.com:443/v1/public/characters?limit=100&ts={{ts}}&apikey={{apiKey}}&hash={{hash}}&name={{character}}",
+					"protocol": "https",
+					"host": [
+						"gateway",
+						"marvel",
+						"com"
+					],
+					"port": "443",
+					"path": [
+						"v1",
+						"public",
+						"characters"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "100"
+						},
+						{
+							"key": "ts",
+							"value": "{{ts}}"
+						},
+						{
+							"key": "apikey",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "hash",
+							"value": "{{hash}}"
+						},
+						{
+							"key": "name",
+							"value": "{{character}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "characters",
+			"value": ""
+		},
+		{
+			"key": "count",
+			"value": ""
+		},
+		{
+			"key": "Character",
+			"value": ""
+		}
+	]
+}
